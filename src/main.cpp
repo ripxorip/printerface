@@ -383,11 +383,11 @@ static uint32_t counter = 0;
 
 void loop()
 {
-  int outp = filter(analogRead(A0));
+  int gas_val = filter(analogRead(A0));
   counter += looptime;
   if (counter > com_time)
   {
-    com.tx(outp);
+    com.tx(gas_val);
     counter = 0;
   }
 

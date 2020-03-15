@@ -3,7 +3,7 @@ import sys
 import json
 
 from flask import Flask
-from flask_restful import Resource, Api
+from flask_restful import reqparse, Resource, Api
 
 import threading
 
@@ -20,7 +20,6 @@ class PrinterFace():
         global state
         while True:
             inp = self.ser.readline().decode().replace('\n', '')
-            print(inp)
             try:
                 data = json.loads(inp)
                 state = data
@@ -34,24 +33,22 @@ t = threading.Thread(target=printerface.run)
 print("Starting thread...")
 t.start()
 
+parser = reqparse.RequestParser()
+parser.add_argument('sensor')
+
 app = Flask(__name__)
 api = Api(app)
 
 
-class GetGas(Resource):
-    def get(self):
-        global state
-        return state['gas']
+class Get(Resource):
+    def get(self, sensor):
+        if sensor in state:
+            return state[sensor]
+        else:
+            return 0
 
 
-class GetTemperature(Resource):
-    def get(self):
-        global state
-        return state['temp']
-
-
-api.add_resource(GetGas, '/gas')
-api.add_resource(GetTemperature, '/temp')
+api.add_resource(Get, '/get/<sensor>')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5050, debug=True)

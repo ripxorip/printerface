@@ -8,8 +8,6 @@ from flask_restful import Resource, Api
 import threading
 
 state = {}
-state['temp'] = 0
-state['gas'] = 0
 
 
 class PrinterFace():
@@ -25,8 +23,7 @@ class PrinterFace():
             print(inp)
             try:
                 data = json.loads(inp)
-                for d in data:
-                    state[d] = data[d]
+                state = data
             except json.JSONDecodeError:
                 pass
 
